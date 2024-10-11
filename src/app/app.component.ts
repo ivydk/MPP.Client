@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IMovie } from '../movie';
 
 @Component({
   selector: 'app-root',
@@ -19,8 +20,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class AppComponent implements OnInit {
   title = 'imdb.client';
 
-  movies: any = [];
-  selectedMovie!: any;
+  movies: IMovie[] = [];
+  selectedMovie!: IMovie;
 
   private baseApiUri = 'http://localhost:8090/movies';
 
@@ -38,11 +39,11 @@ export class AppComponent implements OnInit {
     })
   }
 
-  getMovies(): Observable<any> {
-    return this.http.get<any[]>(this.baseApiUri);
+  getMovies(): Observable<IMovie[]> {
+    return this.http.get<IMovie[]>(this.baseApiUri);
   }
 
-  openModal(movie: any, content: any) {
+  openModal(movie: IMovie, content: any) {
     this.selectedMovie = movie;
     this.modalService.open(content, { backdrop: 'static', keyboard: false })
   }

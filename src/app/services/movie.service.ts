@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { IMovie } from '../../movie';
 
-export interface Movie {
-  id: number;
-  title: string;
-  description: string;
-  year: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +13,8 @@ export class MovieService {
 
   constructor(private http: HttpClient) { }
 
-  getMovies(): Observable<Movie[]> {
+  getMovies(): Observable<IMovie[]> {
     console.log('Get movies')
-    return this.http.get<Movie[]>(this.apiUrl);
+    return this.http.get<IMovie[]>(this.apiUrl);
   }
 }
