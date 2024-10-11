@@ -1,7 +1,6 @@
 export interface IMovie {
-  imdb_id: number;
+  imdb_id: string;
   title: string;
-  description: string;
   year: number;
   rating: number
 }

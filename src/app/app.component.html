@@ -5,31 +5,57 @@
 </nav>
 
 <div class="container mt-5">
+  <div class="d-flex mb-3">
+    <button type="button" class="btn btn-light ms-auto" (click)="openCreateMovieModal(createModal)">
+      <i class="bi bi-plus"></i>Create new movie review
+    </button>
+  </div>
   <div class="row">
     <div class="col-md-4 mb-4 movie-card" *ngFor="let movie of movies">
-      <div class="card h-100" (click)="openModal(movie, content)">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">{{ movie.title }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">{{ movie.year }}</h6>
           <p class="card-text">Rating: {{ movie.rating }}</p>
         </div>
+        <div class="mt-auto modify-buttons-container m-3">
+          <button type="button" class="btn btn-outline-light w-100" (click)="confirmDelete(movie)">Delete</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- modal, opens on click -->
-  <ng-template #content let-modal>
+  <!-- modal to create new movie review-->
+  <ng-template #createModal let-modal>
     <div class="modal-header">
-      <h5 class="modal-title">{{ selectedMovie?.title }}</h5>
+      <h5 class="modal-title">Create new movie</h5>
       <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')"></button>
     </div>
+
     <div class="modal-body">
-      <p><strong>Year:</strong> {{ selectedMovie?.year }}</p>
-      <p><strong>Rating:</strong> {{ selectedMovie?.rating }}</p>
-      <p><strong>IMDB ID:</strong> {{ selectedMovie?.imdb_id }}</p>
+      <form [formGroup]="movieForm">
+        <div class="mb-3">
+          <label for="imdbId" class="form-label">IMDb ID</label>
+          <input type="text" class="form-control" id="imdbId" formControlName="imdb_id">
+        </div>
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" id="title" formControlName="title">
+        </div>
+        <div class="mb-3">
+          <label for="year" class="form-label">Year</label>
+          <input type="number" class="form-control" id="year" formControlName="year">
+        </div>
+        <div class="mb-3">
+          <label for="rating" class="form-label">Rating</label>
+          <input type="number" step="0.1" class="form-control" id="rating" formControlName="rating">
+        </div>
+      </form>
     </div>
+
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+      <button type="button" class="btn btn-outline-light" (click)="modal.dismiss()">Close</button>
+      <button type="button" class="btn btn-light" [disabled]="movieForm.invalid" (click)="saveMovie()">Save</button>
     </div>
   </ng-template>
 </div>
