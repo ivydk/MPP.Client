@@ -1,3 +1,7 @@
 .modal {
   backdrop-filter: blur(5px);
 }
+
+.add-movie-card {
+  background-color: white;
+}

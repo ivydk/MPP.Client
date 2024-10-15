@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, formatCurrency } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { NgbActiveModal, NgbModal, NgbRating } from '@ng-bootstrap/ng-bootstrap';
-import { IMovie } from '../movie';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IMovie } from '../movie';
+import { MovieService } from './services/movie.service';
+import { filter } from 'rxjs';
+import { SortBy } from './enums/sortBy';
+import { SortType } from './enums/sortType';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +19,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
     HttpClientModule,
     ReactiveFormsModule
   ],
+  providers: [MovieService],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -25,9 +29,6 @@ export class AppComponent implements OnInit {
 
   movies: IMovie[] = [];
 
-
-  private baseApiUri = 'http://localhost:8090/movies';
-
   // form with default values
   movieForm = new FormGroup({
     imdb_id: new FormControl('', Validators.required),
@@ -36,51 +37,43 @@ export class AppComponent implements OnInit {
     rating: new FormControl(5.5, Validators.required)
   })
 
+  filterByForm = new FormGroup({
+    year: new FormControl(),
+    sort: new FormControl(),
+    order: new FormControl(),
+  })
+
+  sortBy = SortBy;
+  sortType = SortType;
+
   constructor(
     private http: HttpClient,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private movieService: MovieService
   ) { }
 
   ngOnInit(): void {
     console.log("TEST")
 
-    this.getMovies().subscribe((data) => {
+    this.movieService.getMovies().subscribe((data) => {
       this.movies = data;
       console.log(data)
     })
   }
 
-  getMovies(): Observable<IMovie[]> {
-    return this.http.get<IMovie[]>(this.baseApiUri);
-  }
-
   createMovie(movie: IMovie) {
-    console.log("create movie")
-    return this.http.post<IMovie>(this.baseApiUri, movie).subscribe({
-      next: (response) => {
-        console.log("Movie created successfully", response);
-        // add without refreshing the page
-        this.movies.push(response);
-        this.movieForm.reset();
-      },
-      error: (error) => {
-        console.error("Error creating movie", error);
-      }
-    });
+    this.movieService.createMovie(movie).subscribe(data => {
+      this.movies.push(movie);
+      this.movieForm.reset();
+    })
   }
 
   deleteMovie(imdb_id: string) {
-    return this.http.delete<IMovie>(this.baseApiUri + '/' + imdb_id).subscribe({
-      next: (response) => {
-        console.log("Movie deleted successfully", response);
-        // remove without refreshing the page
-        const index = this.movies.findIndex(movie => movie.imdb_id === imdb_id);
-        this.movies.splice(index, 1);
-      },
-      error: (error) => {
-        console.error("Error deleting movie", error);
-      }
-    });
+    this.movieService.deleteMovie(imdb_id).subscribe(data => {
+      // remove without refreshing the page
+      const index = this.movies.findIndex(movie => movie.imdb_id === imdb_id);
+      this.movies.splice(index, 1);
+    })
   }
 
   openCreateMovieModal(content: any) {
@@ -102,5 +95,29 @@ export class AppComponent implements OnInit {
     if (confirm("Are you sure to delete " + movie.title)) {
       this.deleteMovie(movie.imdb_id);
     }
+  }
+
+  filterBy() {
+    console.log("clicked filter button");
+    console.log(this.filterByForm.controls.year.value,
+      this.filterByForm.controls.sort.value,
+      this.filterByForm.controls.order.value)
+    this.movieService.getMovies(
+      this.filterByForm.controls.year.value,
+      Number(this.filterByForm.controls.sort.value),
+      Number(this.filterByForm.controls.order.value)
+    ).subscribe(data => {
+      this.movies = data;
+      console.log(this.filterByForm.controls)
+    })
+  }
+
+  clearFilter() {
+    this.filterByForm.reset();
+    console.log(this.filterByForm.controls)
+    console.log("clicked clear filter");
+    this.movieService.getMovies().subscribe(data => {
+      this.movies = data;
+    })
   }
 }
