@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IMovie } from '../movie';
@@ -85,7 +85,8 @@ export class AppComponent implements OnInit {
       imdb_id: this.movieForm.controls.imdb_id.value || '',
       title: this.movieForm.controls.title.value || '',
       year: this.movieForm.controls.year.value || new Date().getFullYear(),
-      rating: this.movieForm.controls.rating.value || 5.5
+      rating: this.movieForm.controls.rating.value || 5.5,
+      poster: undefined
     }
 
     this.createMovie(movie);

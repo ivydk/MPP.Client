@@ -5,3 +5,9 @@
 .add-movie-card {
   background-color: white;
 }
+
+.custom-img {
+  object-fit: cover;
+  height: 40vh;
+  width: 100%;
+}
